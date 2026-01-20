@@ -1,0 +1,126 @@
+:root
+{
+    /* Headers... =============================================================================== */
+    --header-height: 40px;
+    --header-color: #ffcc00;
+    --footer-height: 40px;
+    /* Headers and misc shared... =============================================================== */
+    --header-footer-bgColor: #0000cc;
+    --shadow-vert-offset: 5px;
+    --shadow-blur-radius: 6px;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    /* Main panels... =========================================================================== */
+    --panel-margin: 14px;
+    --panel-padding: 4px;
+    /* Main panels (top)... ===================================================================== */
+    --panels-top-height: 120px;
+    /* Main panels (list)... ==================================================================== */
+}
+
+body
+{
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+header
+{
+    height: var(--header-height);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    z-index: 1; /* Ensure it’s above main. */
+    background-color: var(--header-footer-bgColor);
+    box-shadow: 0 var(--shadow-vert-offset) var(--shadow-blur-radius) var(--shadow-color);
+}
+
+.headerTitle
+{
+    margin: 0;
+    color: var(--header-color);
+    font-family: Arial, Helvetica, Verdana, Tahoma, Trebuchet MS, Times New Roman, Georgia, Courier New,
+		 Lucida Console, Impact;
+}
+
+main
+{
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+    background-color: #3333ff;
+    margin: 0;
+    display: flex;
+}
+
+.panelWrapper
+{
+    position: relative;
+}
+
+.leftPanel,
+.rightPanel
+{
+    flex: 1;
+    background-color: #f0f0f0;
+    height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
+		 - var (--panel-padding) * 2);
+    margin: var(--panel-margin);
+    padding: var(--panel-padding);
+}
+
+.leftPanel
+{
+    margin-right: 0px;
+}
+
+.panelTop
+{
+    height: var(--panels-top-height);
+    background-color: #3333ff
+    /* flex: 0 0 auto; */
+}
+
+.panelHeader
+{
+    margin: 0px;
+    margin-bottom: 4px;
+}
+
+.panelList
+{
+    height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
+		 - var(--panels-top-height) - var(--panel-padding) * 2);
+    /* flex: 1; */
+    /* flex: 1 1 auto; /\* fill remaining space *\/ */
+    overflow: auto;
+}
+
+h2
+{
+    font-size: 1.2rem;
+}
+
+.toTopOfListButton
+{position: absolute;
+ /* Distance from the bottom of the element this is anchored too (the element using
+    "position: relative") (going up!) */
+ bottom: calc(var(--panel-padding) * 2);
+ left: 50%;			/* Start at 50% from the left edge of the element */
+ transform: translateX(-50%);	/* Shift half of its own width left to center of the element. */
+}
+
+footer
+{
+    height: var(--footer-height);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    z-index: 1; /* ensures it’s above main */
+    background-color: var(--header-footer-bgColor);
+    box-shadow: 0 calc(-1 * var(--shadow-vert-offset)) var(--shadow-blur-radius) var(--shadow-color);
+}
+
+.footer-tex
+{
+    margin: 11px;
+    color: var(--header-color);
+}
