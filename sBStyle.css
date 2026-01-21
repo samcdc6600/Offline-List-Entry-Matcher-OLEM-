@@ -17,6 +17,7 @@
     /* Main panels (top)... ===================================================================== */
     --panels-top-height: 120px;
     /* Main panels (list)... ==================================================================== */
+    --table-padding: 8px;
 }
 
 @font-face
@@ -50,22 +51,91 @@ textarea
 
 table
 {
-    border-collapse: collapse; /* merge borders, avoids double lines */
+    border-collapse: collapse; /* Merge borders, avoids double lines. */
     width: 100%;
 }
 
 table, th, td
 {
-    border: 1px solid black;   /* adds lines around table and cells */
-    padding: 8px;               /* optional spacing */
-    text-align: left;           /* optional alignment */
+    padding: var(--table-padding);
+    text-align: left;
     white-space: nowrap;
+    border-collapse: collapse; /* Keep inner borders single. */
+    border: none;
 }
 
-/* .scroll_style */
+th
+{
+    background-color: #f9dce3;
+}
+
+th, td
+{
+    border: 1px solid #ff0000;   /* Adds lines around table and cells. */
+}
+
+.tHWithButton
+{
+    padding: 0px;
+}
+
+/* Here ">" is a CSS selector. It selects elements with class "tHButton" that are direct children of
+   a "<th>". */
+th > .tHButton
+{
+      width: 100%;
+    height: 100%;
+
+    display: block;
+
+    padding-top: var(--table-padding);
+    padding-bottom: var(--table-padding);
+    margin: 0;
+
+    border: none;
+    background: none;
+
+    font: inherit;
+    color: inherit;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+
+
+/* /\* Remove outer edges. *\/ */
+/* tr:first-child th, tr:first-child td */
 /* { */
-/*   scrollbar-color: #6f9 #fffce8; */
+/*     border-top: none;      /\* Top edge. *\/ */
 /* } */
+
+/* tr:last-child th, tr:last-child td */
+/* { */
+/*     border-bottom: none;   /\* Bottom edge. *\/ */
+/* } */
+
+/* tr th:first-child, tr td:first-child */
+/* { */
+/*     border-left: none;     /\* Left edge. *\/ */
+/* } */
+
+/* tr th:last-child, tr td:last-child */
+/* { */
+/*     border-right: none;    /\* Right edge. *\/ */
+/* } */
+
+.selectedColumnHeader
+{
+    background-color: #31ff99;
+}
+
+
+.selectedColumn
+{
+    background-color: #ccffe6;
+}
 
 body
 {
@@ -120,7 +190,7 @@ main
 .rightPanel
 {
     flex: 1;
-    background-color: #ffe6f2;
+    background-color: #fff0fa;
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
 		 - var (--panel-padding) * 2);
     width: calc(100vw / 2 - var(--panel-margin) - var(--panel-margin) / 2);
