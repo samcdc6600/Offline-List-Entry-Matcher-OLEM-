@@ -246,6 +246,7 @@ main
 h2
 {
     font-size: 1.2rem;
+    color: var(--header-color);
 }
 
 .toTopOfListButton
