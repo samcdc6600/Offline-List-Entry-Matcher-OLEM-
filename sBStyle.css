@@ -19,6 +19,54 @@
     /* Main panels (list)... ==================================================================== */
 }
 
+@font-face
+{
+    font-family: "Orbix Regular";
+    src: url("./assets/fonts/Orbix-Regular.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+        font-family: "Simplex Sans";
+    src: url("./assets/fonts/SimplexSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html
+{
+    font-family: "Orbix Regular", serif;
+}
+
+button,
+input,
+select,
+textarea
+{
+    font: inherit;
+}
+
+table
+{
+    border-collapse: collapse; /* merge borders, avoids double lines */
+    width: 100%;
+}
+
+table, th, td
+{
+    border: 1px solid black;   /* adds lines around table and cells */
+    padding: 8px;               /* optional spacing */
+    text-align: left;           /* optional alignment */
+    white-space: nowrap;
+}
+
+/* .scroll_style */
+/* { */
+/*   scrollbar-color: #6f9 #fffce8; */
+/* } */
+
 body
 {
     margin: 0px;
@@ -41,8 +89,7 @@ header
 {
     margin: 0;
     color: var(--header-color);
-    font-family: Arial, Helvetica, Verdana, Tahoma, Trebuchet MS, Times New Roman, Georgia, Courier New,
-		 Lucida Console, Impact;
+    font-family: "Orbix Regular";
 }
 
 main
@@ -76,7 +123,9 @@ main
     background-color: #ffe6f2;
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
 		 - var (--panel-padding) * 2);
+    width: calc(100vw / 2 - var(--panel-margin) - var(--panel-margin) / 2);
     margin: var(--panel-margin);
+    scrollbar-color: #ff8000 #ccccff;
     /* padding: var(--panel-padding); */
     /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
 }
@@ -110,13 +159,14 @@ main
 .panelList
 {
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
-		 - var(--panels-top-height) - var(--panel-padding) * 4);
+		 - var(--panels-top-height) - var(--panel-padding) * 2);
     /* flex: 1; */
     /* flex: 1 1 auto; /\* fill remaining space *\/ */
-    padding: var(--panel-padding);
-    padding-bottom: 0px;
+    /* padding: var(--panel-padding); */
+    /* padding-bottom: 0px; */
     overflow: auto;
-        /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
+    /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
+        font-family: "Simplex Sans";
 }
 
 h2
