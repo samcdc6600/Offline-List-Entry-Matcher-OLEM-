@@ -157,43 +157,48 @@ function sortTableByColumn(colName, ascending = true)
 	       So "3.14zfb" would become 3.14! */
             const numA = parseFloat(valA);
             const numB = parseFloat(valB);
-            if (!isNaN(numA) && !isNaN(numB))
+            if(!isNaN(numA) && !isNaN(numB))
 	    {
 		return ascending ? numA - numB : numB - numA;
             }
 
             // Otherwise, string comparison
-            if (valA < valB) return ascending ? -1 : 1;
-            if (valA > valB) return ascending ? 1 : -1;
+            if(valA < valB) return ascending ? -1 : 1;
+            if(valA > valB) return ascending ? 1 : -1;
             return 0;
 	});
 }
 
 
+function handleScan(value)
+{
+    console.log("Scanned:", value);
+}
+
 
 function main()
 {
-    const openFileButton = document.getElementById("openFileButtonId");
+    const openFileButtonElement = document.getElementById("openFileButtonId");
     candidatesTable = document.getElementById("candidateTableContainerId")
 
-    openFileButton.addEventListener('click', () =>
+    openFileButtonElement.addEventListener('click', () =>
 	{
 	    // Create a hidden file input
-	    const input = document.createElement('input');
-	    input.type = 'file';
+	    const inputFiles = document.createElement('input');
+	    inputFiles.type = 'file';
 
 	    // When a file is selected
-	    input.addEventListener('change', () =>
+	    inputFiles.addEventListener('change', () =>
 		{
-		    if(input.files.length > 0)
+		    if(inputFiles.files.length > 0)
 		    {
-			const file = input.files[0];
+			const file = inputFiles.files[0];
 			const reader = new FileReader();
 
-			reader.onload = (e) =>
+			reader.onload = (event) =>
 			{
 			    selectedColumnInCandidateList = 0; // Reset to 0 for a new file...
-			    candidateList = parseCSVData(e.target.result);
+			    candidateList = parseCSVData(event.target.result);
 			    candidatesTable.innerHTML = generateTable
 			    (candidateList, selectedColumnInCandidateList) +
 				generateToTopOfTableButton();
@@ -203,7 +208,22 @@ function main()
 		    }
 		});
 
-	    input.click();
+	    inputFiles.click();
+	});
+
+    const matchCandidateInputElement = document.getElementById("matchCandidateInputFieldId");
+
+    matchCandidateInputElement.addEventListener("keydown", (event) =>
+	{
+	    if(event.key === "Enter")
+	    {
+		// Do not perform the default action for this event.
+		event.preventDefault();
+		const inputVal = matchCandidateInputElement.value.trim();
+		handleScan(inputVal);
+
+		matchCandidateInputElement.value = "";
+	    }
 	});
 }
 
