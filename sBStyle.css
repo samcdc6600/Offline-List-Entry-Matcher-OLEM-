@@ -18,6 +18,7 @@
     --panels-top-height: 120px;
     /* Main panels (list)... ==================================================================== */
     --table-padding: 8px;
+    --table-bgColor: #f9dce3;
 }
 
 @font-face
@@ -66,7 +67,7 @@ table, th, td
 
 th
 {
-    background-color: #f9dce3;
+    background-color: var(--table-bgColor);
     /* display: flex; */
 }
 
@@ -201,7 +202,7 @@ main
 .rightPanel
 {
     flex: 1;
-    background-color: #fff0fa;
+    background-color: var(--table-bgColor);
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
 		 - var (--panel-padding) * 2);
     width: calc(100vw / 2 - var(--panel-margin) - var(--panel-margin) / 2);

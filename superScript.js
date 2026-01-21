@@ -1,3 +1,8 @@
+let selectedColumnInCandidateList = 0;
+let candidateList = {};
+candidatesTable = {};
+
+
 function parseCSVData(cSVData)
 {
     cSVData = cSVData.trim();
@@ -30,8 +35,17 @@ function parseCSVData(cSVData)
 }
 
 
-function generateTable(tableData)
+function generateTable(tableData, selectedColumnInCandidateList)
 {
+    if(selectedColumnInCandidateList < 0 || selectedColumnInCandidateList >=
+       tableData.headers.length)
+    {
+	// This is probably a fatal error...
+	throw new Error (`Fatal (in generateTable()): selectedColumnInCandidateList \
+(${selectedColumnInCandidateList}) < 0 || selectedColumnInCandidateList >= \
+tableData.headers.length (${tableData.headers.length})`)
+    }
+
     // Generate table header =======================================================================
     let tableHTMLText = `
 <table class=\"dataTable\">
@@ -39,18 +53,27 @@ function generateTable(tableData)
     <tr>`;
     tableData.headers.forEach((header, i) =>
 	{
-	    let sharedClasses = "tHWithButton";
-	    if(i === 0)
+	    let classe = "tHWithButton ";
+
+	    tableHTMLText += "<th class=\"" + classe;
+	    if(i === selectedColumnInCandidateList)
 	    {
 		// First column is selected by default...
-		tableHTMLText += "<th class=\"selectedColumnHeader " + sharedClasses + "\">";
+		tableHTMLText += "selectedColumnHeader ";
 	    }
-	    else
-	    {
-		tableHTMLText +=  "<th class=\"" + sharedClasses + "\">";
-	    }
-	    tableHTMLText += "<button type=\"button\" class=\"tHButton\">" + header + "</button>" +
-		"<button type=\"button\" class=\"tHButton\"><- sort</button></th>";
+	    /* Since our CSV data should be coming from a DB we are going to assume that each table
+	       column has a uniquely named header. We can access this element from one of it's
+	       button type sub-element to get "name", which can be used as a key into
+	       candidateList. */
+	    tableHTMLText += "\"  name=\"" + header + "\">";
+	    /* Add buttons... (we decided it was simpler to just use event handlers (onclick()s)
+	       here, which are technically callbacks, but in JS "callbacks" are mean something
+	       slightly different (which are also callbacks and which was the alternative to what
+	       we are doing)). */
+	    tableHTMLText += "<button type=\"button\" class=\"tHButton\" " +
+		"onclick=\"handleHeaderNameButtonClick(this)\">" + header + "</button>" +
+		"<button type=\"button\" class=\"tHButton\" " +
+		"onclick=\"handleHeaderSortButtonClick(this)\"><- sort</button></th>";
 	});
     tableHTMLText += `
     </tr>
@@ -66,7 +89,7 @@ function generateTable(tableData)
 	    tableData.headers.forEach((header, i) =>
 		{
 		    let highlitText = "";
-		    if(i === 0)
+		    if(i === selectedColumnInCandidateList)
 		    {
 			highlitText = " class=\"selectedColumn\"";
 		    }
@@ -95,12 +118,63 @@ function generateToTopOfTableButton()
 }
 
 
+function handleHeaderNameButtonClick(buttonObj)
+{
+    /* Here we essentially just find the index of the column associated with the button and then
+       regenerate the table (IDK there's probably a more optimal way to do it, but this is simple
+       and the table probably isn't going to be more than a few thousand elements at most. )*/
+    const tableHeader = buttonObj.parentElement;
+    /* Get unique column name (as dissected above we are assuming that each column has a unique
+       name!) */
+    const newSelectedColumnIndex = candidateList.headers.indexOf(tableHeader.getAttribute("name"));
+    candidatesTable.innerHTML = generateTable(candidateList, newSelectedColumnIndex) +
+	generateToTopOfTableButton();
+}
+
+
+function handleHeaderSortButtonClick(buttonObj)
+{
+    const tableHeader = buttonObj.parentElement;
+    const tableColumnKey = tableHeader.getAttribute("name");
+    sortTableByColumn(tableColumnKey);
+    candidatesTable.innerHTML = generateTable(candidateList, selectedColumnInCandidateList) +
+	generateToTopOfTableButton();
+}
+
+
+function sortTableByColumn(colName, ascending = true)
+{
+    /* Here a is row n and b is row n + 1. A negative return result means that a should come before
+       b and zero means that they are the same. Also note that sort() sorts the array in place (so
+       there's no need for candidateList = ...) */
+    candidateList.rows.sort((a, b) =>
+	{
+            const valA = a[colName];
+            const valB = b[colName];
+
+            /* If numeric, convert strings to numbers (note that parseFloat(string) looks at the
+	       start of the string and tries to convert it into a floating-point number.
+	       So "3.14zfb" would become 3.14! */
+            const numA = parseFloat(valA);
+            const numB = parseFloat(valB);
+            if (!isNaN(numA) && !isNaN(numB))
+	    {
+		return ascending ? numA - numB : numB - numA;
+            }
+
+            // Otherwise, string comparison
+            if (valA < valB) return ascending ? -1 : 1;
+            if (valA > valB) return ascending ? 1 : -1;
+            return 0;
+	});
+}
+
+
+
 function main()
 {
     const openFileButton = document.getElementById("openFileButtonId");
-    const tableElement = document.getElementById("candidateTableContainerId")
-    let candidateList = {};
-
+    candidatesTable = document.getElementById("candidateTableContainerId")
 
     openFileButton.addEventListener('click', () =>
 	{
@@ -118,8 +192,10 @@ function main()
 
 			reader.onload = (e) =>
 			{
+			    selectedColumnInCandidateList = 0; // Reset to 0 for a new file...
 			    candidateList = parseCSVData(e.target.result);
-			    tableElement.innerHTML = generateTable(candidateList) +
+			    candidatesTable.innerHTML = generateTable
+			    (candidateList, selectedColumnInCandidateList) +
 				generateToTopOfTableButton();
 			};
 
