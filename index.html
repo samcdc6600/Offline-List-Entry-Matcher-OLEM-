@@ -17,14 +17,19 @@
       <section class="leftPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Matched List</h2>
-	  <button onclick="scrollToIdOnClick(this)">
-	    Save List
-	  </button>
+
+	  
+	  <div class="panelControlsCluster">
+	    <button class="tableControlsButton" onclick="scrollToIdOnClick(this)">
+	      Save List
+	    </button>
+	  </div>
+	  
 	  <p>I love this stuff you know what I mean I just don't really know.</p>
 	</div>
 	<div class="panelList">
 	  <div class="toTopOfListButton">
-	  <button onclick="scrollToIdOnClick(this)">
+	  <button class="tableControlsButton tableToTopButton" onclick="scrollToIdOnClick(this)">
 	    To Top of List
 	  </button>
 	  </div>
@@ -34,13 +39,21 @@
       <section class="rightPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Candidate List</h2>
-	  <button id="openFileButtonId">
-	    Open File
-	  </button>
+
+	  
+	  <div class="panelControlsCluster">
+	    <button class="tableControlsButton" id="openFileButtonId">
+	      Open File
+	    </button>
+	    <input class="textInputField" type="text" id="myInput"
+		   placeholder="Enter match candidate...">
+	  </div>
+
+	  
 	</div>
 	<div class="panelList" id="candidateTableContainerId">
 	  <div class="toTopOfListButton">
-	    <button onclick="scrollToIdOnClick(this)">
+	    <button class="tableControlsButton tableToTopButton" onclick="scrollToIdOnClick(this)">
 	      To Top of List
 	    </button>
 	  </div>

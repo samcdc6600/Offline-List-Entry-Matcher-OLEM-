@@ -73,7 +73,7 @@ tableData.headers.length (${tableData.headers.length})`)
 	    tableHTMLText += "<button type=\"button\" class=\"tHButton\" " +
 		"onclick=\"handleHeaderNameButtonClick(this)\">" + header + "</button>" +
 		"<button type=\"button\" class=\"tHButton\" " +
-		"onclick=\"handleHeaderSortButtonClick(this)\"><- sort</button></th>";
+		"onclick=\"handleHeaderSortButtonClick(this)\">&lt;- sort</button></th>";
 	});
     tableHTMLText += `
     </tr>
@@ -111,7 +111,7 @@ function generateToTopOfTableButton()
 {
     return `
 <div class="toTopOfListButton">
-  <button onclick="scrollToIdOnClick(this)">
+  <button class="tableControlsButton tableToTopButton" onclick="scrollToIdOnClick(this)">
     To Top of List
   </button>
 </div>`;
@@ -126,8 +126,8 @@ function handleHeaderNameButtonClick(buttonObj)
     const tableHeader = buttonObj.parentElement;
     /* Get unique column name (as dissected above we are assuming that each column has a unique
        name!) */
-    const newSelectedColumnIndex = candidateList.headers.indexOf(tableHeader.getAttribute("name"));
-    candidatesTable.innerHTML = generateTable(candidateList, newSelectedColumnIndex) +
+    selectedColumnInCandidateList = candidateList.headers.indexOf(tableHeader.getAttribute("name"));
+    candidatesTable.innerHTML = generateTable(candidateList, selectedColumnInCandidateList) +
 	generateToTopOfTableButton();
 }
 

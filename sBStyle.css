@@ -19,6 +19,7 @@
     /* Main panels (list)... ==================================================================== */
     --table-padding: 8px;
     --table-bgColor: #f9dce3;
+    --table-controls-font-size: 1em;
 }
 
 @font-face
@@ -31,7 +32,7 @@
 
 @font-face
 {
-        font-family: "Simplex Sans";
+    font-family: "Simplex Sans";
     src: url("./assets/fonts/SimplexSans-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
@@ -43,11 +44,49 @@ html
 }
 
 button,
-input,
 select,
 textarea
 {
     font: inherit;
+}
+
+/* This is for table controls (excluding the actual in-table heading buttons).  */
+.tableControlsButton
+{
+    width: 102px;
+    max-width: 102px;
+    min-width: 102px;
+    font-family: "Orbix Regular", serif;
+    font-size: var(--table-controls-font-size);
+}
+
+.tableToTopButton
+{
+    width: auto;
+    max-width: 500px;
+}
+
+.panelControlsCluster
+{   display: flex;             /* puts input and button in a row */
+    align-items: stretch;      /* makes them same height */
+    gap: 4px; 
+
+}
+
+.panelControlsCluster input,
+.panelControlsCluster button
+{
+    box-sizing: border-box;    /* include padding/border in width/height */
+    padding: 1px 4px;
+    height: 25px;              /* match container height */
+}
+
+.textInputField
+{
+    width: 100%;
+    padding-top: 0px;
+    font-size: 1rem;
+    font-family: "Simplex Sans";
 }
 
 table
@@ -68,7 +107,6 @@ table, th, td
 th
 {
     background-color: var(--table-bgColor);
-    /* display: flex; */
 }
 
 th, td
@@ -85,13 +123,8 @@ th, td
    a "<th>". */
 th > .tHButton
 {
-    flex: 1 0 50%;
     height: 100%;
-
-    /* display: block; */
-
     padding: var(--table-padding);
-    /* padding-bottom: var(--table-padding); */
     margin: 0;
 
     border: none;
@@ -114,29 +147,6 @@ th > .tHButton:active
     background-color: #00ff00;
     box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--outer-panel-inset-shadow-color);
 }
-
-
-
-/* /\* Remove outer edges. *\/ */
-/* tr:first-child th, tr:first-child td */
-/* { */
-/*     border-top: none;      /\* Top edge. *\/ */
-/* } */
-
-/* tr:last-child th, tr:last-child td */
-/* { */
-/*     border-bottom: none;   /\* Bottom edge. *\/ */
-/* } */
-
-/* tr th:first-child, tr td:first-child */
-/* { */
-/*     border-left: none;     /\* Left edge. *\/ */
-/* } */
-
-/* tr th:last-child, tr td:last-child */
-/* { */
-/*     border-right: none;    /\* Right edge. *\/ */
-/* } */
 
 .selectedColumnHeader
 {
@@ -194,8 +204,6 @@ main
     inset: 0;
     pointer-events: none;
     box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--outer-panel-inset-shadow-color);
-        /* box-shadow: inset 0px 0px 50px var(--shadow-color); */
-    /* box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4); */
 }
 
 .leftPanel,
@@ -203,13 +211,10 @@ main
 {
     flex: 1;
     background-color: var(--table-bgColor);
-    height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
-		 - var (--panel-padding) * 2);
+    height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2);
     width: calc(100vw / 2 - var(--panel-margin) - var(--panel-margin) / 2);
     margin: var(--panel-margin);
     scrollbar-color: #ff8000 #ccccff;
-    /* padding: var(--panel-padding); */
-    /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
 }
 
 .leftPanel
@@ -221,14 +226,6 @@ main
 {
     height: var(--panels-top-height);
     background-color: #3333ff;
-    /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
-    /* margin-top: calc(0px - var(--panel-padding)); */
-    /* margin-left: calc(0px - var(--panel-padding)); */
-    /* margin-right: calc(0px - var(--panel-padding)); */
-    /* padding-top: var(--panel-padding); */
-    /* padding-left: var(--panel-padding); */
-    /* padding-right: var(--panel-padding); */
-
     padding: var(--panel-padding);
 }
 
@@ -242,13 +239,8 @@ main
 {
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
 		 - var(--panels-top-height) - var(--panel-padding) * 2);
-    /* flex: 1; */
-    /* flex: 1 1 auto; /\* fill remaining space *\/ */
-    /* padding: var(--panel-padding); */
-    /* padding-bottom: 0px; */
     overflow: auto;
-    /* box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--shadow-color); */
-        font-family: "Simplex Sans";
+    font-family: "Simplex Sans";
 }
 
 h2
