@@ -49,8 +49,8 @@ function generateTable(tableData)
 	    {
 		tableHTMLText +=  "<th class=\"" + sharedClasses + "\">";
 	    }
-	    tableHTMLText += "<button type=\"button\">" + header + "</button>" +
-		"<button type=\"button\"><- sort</button></th>";
+	    tableHTMLText += "<button type=\"button\" class=\"tHButton\">" + header + "</button>" +
+		"<button type=\"button\" class=\"tHButton\"><- sort</button></th>";
 	});
     tableHTMLText += `
     </tr>

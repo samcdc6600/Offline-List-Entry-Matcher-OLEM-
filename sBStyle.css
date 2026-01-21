@@ -67,6 +67,7 @@ table, th, td
 th
 {
     background-color: #f9dce3;
+    /* display: flex; */
 }
 
 th, td
@@ -83,13 +84,13 @@ th, td
    a "<th>". */
 th > .tHButton
 {
-      width: 100%;
+    flex: 1 0 50%;
     height: 100%;
 
-    display: block;
+    /* display: block; */
 
-    padding-top: var(--table-padding);
-    padding-bottom: var(--table-padding);
+    padding: var(--table-padding);
+    /* padding-bottom: var(--table-padding); */
     margin: 0;
 
     border: none;
@@ -102,6 +103,16 @@ th > .tHButton
     cursor: pointer;
 }
 
+th > .tHButton:hover
+{
+    background-color: #f8beca;
+}
+
+th > .tHButton:active
+{
+    background-color: #00ff00;
+    box-shadow: inset 0px 0px var(--shadow-blur-radius) var(--outer-panel-inset-shadow-color);
+}
 
 
 
