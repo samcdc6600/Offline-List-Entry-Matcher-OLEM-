@@ -48,6 +48,19 @@ select,
 textarea
 {
     font: inherit;
+    cursor: pointer;
+}
+
+input[type="radio"]
+{
+        transform: scale(1.5);   /* increase size */
+    accent-color: var(--header-footer-bgColor);   /* modern way to change selected colour */
+    cursor: pointer;
+}
+
+.radioButtonLabel
+{
+    cursor: pointer;
 }
 
 /* This is for table controls (excluding the actual in-table heading buttons).  */
@@ -79,6 +92,13 @@ textarea
     box-sizing: border-box;    /* include padding/border in width/height */
     padding: 1px 4px;
     height: 25px;              /* match container height */
+}
+
+.panelControlsClusterRadioButtons
+{
+    display: block;
+    min-width: 136px;;
+    color: var(--header-color);
 }
 
 .textInputField
@@ -250,12 +270,13 @@ h2
 }
 
 .toTopOfListButton
-{position: absolute;
- /* Distance from the bottom of the element this is anchored too (the element using
+{
+    position: absolute;
+    /* Distance from the bottom of the element this is anchored too (the element using
     "position: relative") (going up!) */
- bottom: calc(var(--panel-padding) * 2);
- left: 50%;			/* Start at 50% from the left edge of the element */
- transform: translateX(-50%);	/* Shift half of its own width left to center of the element. */
+    bottom: calc(var(--panel-padding) * 2);
+    left: 50%;			/* Start at 50% from the left edge of the element */
+    transform: translateX(-50%);	/* Shift half of its own width left to center of the element. */
 }
 
 footer
