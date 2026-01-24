@@ -20,6 +20,8 @@
     --table-padding: 8px;
     --table-bgColor: #f9dce3;
     --table-controls-font-size: 1em;
+    --table-header-highlight-color: #31ff99;
+    --table-highlight-color: #ccffe6;
 }
 
 @font-face
@@ -43,6 +45,8 @@ html
     font-family: "Orbix Regular", serif;
 }
 
+
+
 button,
 select,
 textarea
@@ -51,16 +55,26 @@ textarea
     cursor: pointer;
 }
 
+input[type="checkbox"],
 input[type="radio"]
 {
-        transform: scale(1.5);   /* increase size */
+    transform: scale(1.5);   /* increase size */
     accent-color: var(--header-footer-bgColor);   /* modern way to change selected colour */
     cursor: pointer;
 }
 
+.checkboxLabel,
 .radioButtonLabel
 {
+    display: inline-flex;
+    align-items: center;
     cursor: pointer;
+    gap: 0.25em;
+}
+
+.radioButtonLabel span
+{
+    transform: translateY(0.15rem);
 }
 
 /* This is for table controls (excluding the actual in-table heading buttons).  */
@@ -77,6 +91,14 @@ input[type="radio"]
 {
     width: auto;
     max-width: 500px;
+    opacity: 0.22;
+    transition: opacity 0.65s ease; /* This is the fade out time! */
+}
+
+.tableToTopButton:hover
+{
+    opacity: 1;
+    transition: opacity 0.17s ease; /* This is the fade in time! */
 }
 
 .panelControlsCluster
@@ -107,6 +129,12 @@ input[type="radio"]
     padding-top: 0px;
     font-size: 1rem;
     font-family: "Simplex Sans";
+}
+
+.tsvCsvDataTextInputField
+{
+    /* width: 102px; */
+    max-width: 208px;
 }
 
 table
@@ -170,13 +198,72 @@ th > .tHButton:active
 
 .selectedColumnHeader
 {
-    background-color: #31ff99;
+    background-color: var(--table-header-highlight-color);
 }
 
 
-.selectedColumn
+.selectedCell
 {
-    background-color: #ccffe6;
+    background-color: var(--table-highlight-color);
+}
+
+.containsTriangle
+{
+    position: relative;
+}
+
+.topHalfTriangle
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(0% 0%, 50% 50%, 100% 0%);
+    background: var(--table-header-highlight-color);
+    z-index: 1;
+}
+
+.bottomHalfTriangle
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(0% 100%, 50% 50%, 100% 100%);
+    background: var(--table-header-highlight-color);
+    z-index: 1;
+}
+
+.leftHalfTriangle
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(100% 0%, 100% 100%, 50% 50%);
+    background: var(--table-highlight-color);
+    z-index: 1;
+}
+
+.rightHalfTriangle
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(0% 0%, 0% 100%, 50% 50%);
+    background: var(--table-highlight-color);
+    z-index: 1;
+}
+
+span.doublyHighlightexTableCellText
+{
+    position: relative;
+    z-index: 2;
 }
 
 body
@@ -184,6 +271,7 @@ body
     margin: 0px;
     padding: 0px;
     height: 100%;
+    min-width: 600px;
 }
 
 header

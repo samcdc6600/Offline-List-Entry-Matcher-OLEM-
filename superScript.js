@@ -1,11 +1,20 @@
 let	selectedColumnInCandidateList = 0;
-let	candidatesTableElement	= {};
-let	candidateList		= {};
-let	matchedTableElement	= {};
-let	matchedList		= {};
-const	foundMatchSound		= new Audio("assets/audio/affirmativeMatch_louder.wav");
-const	noMatchFoundSound	= new Audio("assets/audio/negativeMatch_louder.wav");
+let	candidatesTableHTMLElement	= {};
+let	candidatesList		= {};
+let	matchedTableHTMLElement	= {};
+let	fieldSeparatorStr	= "\t";
+let	hideMatchingCandidateRows = true;
+const	foundMatchSoundPath	= "assets/audio/affirmativeMatch_louder.wav";
+const	noMatchFoundSoundPath	= "assets/audio/negativeMatch_louder.wav";
 
+/* We need this because one Audio object can only play one sound at a time. It would be faster to
+   have a pool of Audio objects, but we're trying to keep things relatively simple. This should
+   probably be fast enough. */
+function playSound(src)
+{
+    const audio = new Audio(src);
+    audio.play();
+}
 
 function parseCSVData(cSVData)
 {
@@ -13,15 +22,17 @@ function parseCSVData(cSVData)
     const lines = cSVData.split("\n");             // Split into rows...
     /* Extract header row (shift removes the first element of an array). Map will apply trim() to
        each element in the array returned by split. */
-    const headers = lines.shift().split(",").map(header => header.trim());
+    const headers = lines.shift().split(fieldSeparatorStr).map(header => header.trim());
 
     /* Call the lambda for each element in lines (the element is assigned to line).
        Rows should end up being filled with data like this:
-       [ ["100000000001", "A1", "Electronics", "Sony", "X100"],
-       ["100000000002", "A2", "Electronics", "Samsung", "GalaxyS21"], ... ] */
+       [ {rowData: { barcode: "100000000001", bin: "A1", category: "Electronics", … },
+       wasMatched: false},
+       {rowData: { barcode: "100000000002", bin: "A2", category: "Electronics", … },
+       wasMatched: false}, ... ] */
     const rows = lines.map(line =>
 	{
-	    const values = line.split(",");
+	    const values = line.split(fieldSeparatorStr);
 	    const rowObj = {};
 
 	    // For each element in headers assign it to header and it's index to i.
@@ -31,7 +42,8 @@ function parseCSVData(cSVData)
 		       like a map). */
 		    rowObj[header] = values[i].trim();
 		});
-	    return rowObj;
+	    
+	    return {"rowData": rowObj, "wasMatched": false};
 	});
 
     // This syntax is actually shorthand for this "{headers: headers, rows: rows}".
@@ -66,7 +78,7 @@ tableData.headers.length (${tableData.headers.length})`)
 	    /* Since our CSV data should be coming from a DB we are going to assume that each table
 	       column has a uniquely named header. We can access this element from one of it's
 	       button type sub-element to get "name", which can be used as a key into
-	       candidateList. */
+	       candidatesList. */
 	    tableHTMLText += "\"  name=\"" + header + "\">";
 	    /* Add buttons... (we decided it was simpler to just use event handlers (onclick()s)
 	       here, which are technically callbacks, but in JS "callbacks" are mean something
@@ -90,12 +102,53 @@ tableData.headers.length (${tableData.headers.length})`)
 	    tableHTMLText += "<tr>";
 	    tableData.headers.forEach((header, i) =>
 		{
-		    let highlitText = "";
-		    if(i === selectedColumnInCandidateList)
+		    const generateCellProper = function()
 		    {
-			highlitText = " class=\"selectedColumn\"";
+			let useNormalTd = true;
+			let highlitText = "";
+			if(i === selectedColumnInCandidateList)
+			{
+			    if(!row.wasMatched)
+			    {
+				highlitText = " class=\"selectedCell\"";
+			    }
+			    else
+			    {
+				useNormalTd = false;
+			    }
+			}
+			else if(row.wasMatched)
+			{
+			    highlitText = " class=\"selectedCell\"";
+			}
+
+			if(useNormalTd)
+			{
+			    tableHTMLText += "<td" + highlitText + ">" + row.rowData[header] +
+				"</td>";
+			}
+			else
+			{
+			    tableHTMLText += "<td class=\"containsTriangle\">" +
+				`<div class="topHalfTriangle"></div>
+<div class="bottomHalfTriangle"></div>
+<div class="rightHalfTriangle"></div>
+<div class="leftHalfTriangle"></div><span class="doublyHighlightexTableCellText">` +
+				row.rowData[header] + "</span></td>";
+			}
+		    };
+
+		    if(row.wasMatched)
+		    {
+			if(!hideMatchingCandidateRows)
+			{
+			    generateCellProper();
+			}
 		    }
-		    tableHTMLText += "<td" + highlitText + ">" + row[header] + "</td>";
+		    else
+		    {
+			generateCellProper();
+		    }
 		});
 	    tableHTMLText += "</tr>";
 	});
@@ -122,17 +175,9 @@ function generateMatchedTableHeader(tableData)
 	    /* Since our CSV data should be coming from a DB we are going to assume that each table
 	       column has a uniquely named header. We can access this element from one of it's
 	       button type sub-element to get "name", which can be used as a key into
-	       candidateList. */
+	       candidatesList. */
 	    tableHTMLText += "<th class=\" \"  name=\"" + header + "\">" + header +
 		"</th>";
-	    // /* Add buttons... (we decided it was simpler to just use event handlers (onclick()s)
-	    //    here, which are technically callbacks, but in JS "callbacks" are mean something
-	    //    slightly different (which are also callbacks and which was the alternative to what
-	    //    we are doing)). */
-	    // tableHTMLText += "<button type=\"button\" class=\"tHButton\" " +
-	    // 	"onclick=\"handleHeaderNameButtonClick(this)\">" + header + "</button>" +
-	    // 	"<button type=\"button\" class=\"tHButton\" " +
-	    // 	"onclick=\"handleHeaderSortButtonClick(this)\">&lt;- sort</button></th>";
 	});
     tableHTMLText += `
     </tr>
@@ -156,7 +201,7 @@ function generateTableRow(tableData, newRow)
 	    let highlitText = "";
 	    if(i === selectedColumnInCandidateList)
 	    {
-		highlitText = " class=\"selectedColumn\"";
+		highlitText = " class=\"selectedCell\"";
 	    }
 	    tableHTMLText += "<td" + highlitText + ">" + newRow[header] + "</td>";
 	});
@@ -185,9 +230,10 @@ function handleHeaderNameButtonClick(buttonObj)
     const tableHeader = buttonObj.parentElement;
     /* Get unique column name (as dissected above we are assuming that each column has a unique
        name!) */
-    selectedColumnInCandidateList = candidateList.headers.indexOf(tableHeader.getAttribute("name"));
-    candidatesTableElement.innerHTML = generateTable(candidateList, selectedColumnInCandidateList) +
-	generateToTopOfTableButton();
+    selectedColumnInCandidateList =
+	candidatesList.headers.indexOf(tableHeader.getAttribute("name"));
+    candidatesTableHTMLElement.innerHTML =
+	generateTable(candidatesList, selectedColumnInCandidateList) + generateToTopOfTableButton();
 }
 
 
@@ -196,8 +242,8 @@ function handleHeaderSortButtonClick(buttonObj)
     const tableHeader = buttonObj.parentElement;
     const tableColumnKey = tableHeader.getAttribute("name");
     sortTableByColumn(tableColumnKey);
-    candidatesTableElement.innerHTML = generateTable(candidateList, selectedColumnInCandidateList) +
-	generateToTopOfTableButton();
+    candidatesTableHTMLElement.innerHTML =
+	generateTable(candidatesList, selectedColumnInCandidateList) + generateToTopOfTableButton();
 }
 
 
@@ -205,11 +251,12 @@ function sortTableByColumn(colName, ascending = true)
 {
     /* Here a is row n and b is row n + 1. A negative return result means that a should come before
        b and zero means that they are the same. Also note that sort() sorts the array in place (so
-       there's no need for candidateList = ...) */
-    candidateList.rows.sort((a, b) =>
+       there's no need for candidatesList = ...)
+       Note that sort() should be stable for ES2019 and never versions of the JS spec. */
+    candidatesList.rows.sort((a, b) =>
 	{
-            const valA = a[colName];
-            const valB = b[colName];
+            const valA = a.rowData[colName];
+            const valB = b.rowData[colName];
 
             /* If numeric, convert strings to numbers (note that parseFloat(string) looks at the
 	       start of the string and tries to convert it into a floating-point number.
@@ -231,60 +278,92 @@ function sortTableByColumn(colName, ascending = true)
 
 function checkForAndHandleMatch(searchCandidate)
 {
-    if(Object.keys(candidateList).length > 0)
+    if(Object.keys(candidatesList).length > 0)
     {
 	if(selectedColumnInCandidateList < 0 || selectedColumnInCandidateList >=
-	   candidateList.headers.length)
+	   candidatesList.headers.length)
 	{
 	    // This is probably a fatal error...
 	    throw new Error (`Fatal (in checkForAndHandleMatch()): selectedColumnInCandidateList \
 (${selectedColumnInCandidateList}) < 0 || selectedColumnInCandidateList >= \
-candidateList.headers.length (${candidateList.headers.length})`)
+candidatesList.headers.length (${candidatesList.headers.length})`)
 	}
 	
-	const columnKey = candidateList.headers[selectedColumnInCandidateList];
+	const columnKey = candidatesList.headers[selectedColumnInCandidateList];
 
 	/* FindIndex is really like a for loop that calls the lambda on all elements until it finds
 	   a match (which is signified by the return value of the lambda). It then returns the index
 	   of the match that was found. It will return -1 if no match is found. It only finds one
 	   match. */
-	const index = candidateList.rows.findIndex(row =>
+	const index = candidatesList.rows.findIndex(row =>
 	    {
 		/* We are calling the hasOwnProperty() fuction associated with Object (the original,
 		   unoverridden version) and passing it row as "this" and it will return true if the
 		   row object has the key columnKey.
 		   If row has the key (which really they all should), then we'll check if it has
 		   searchCandidate too. */
-		return Object.prototype.hasOwnProperty.call(row, columnKey)
-		    && row[columnKey] === searchCandidate;
+		return Object.prototype.hasOwnProperty.call(row.rowData, columnKey)
+		    && row.rowData[columnKey] === searchCandidate && !row.wasMatched;
 	    });
 
 	if(index !== -1)
 	{
-	    foundMatchSound.play();
+	    playSound(foundMatchSoundPath);
+	    candidatesList.rows[index].wasMatched = true;
 	    // if(Object.keys(matchedList).length === 0)
 	    // {
-	    // 	/* Use header from candidateList for our table...
+	    // 	/* Use header from candidatesList for our table...
 	    // 	   THIS PROBABLY SHOULDN'T BE IT AT ALL TBH. */
-	    // 	matchedTableElement.innerHTML = generateMatchedTableHeader(candidateList);
+	    // 	matchedTableHTMLElement.innerHTML = generateMatchedTableHeader(candidatesList);
 	    // }
 
-	    const tblBody = matchedTableElement.querySelector("tbody");
-	    tblBody.innerHTML += generateTableRow(candidateList, candidateList.rows[index]);
+	    /* Yes this is slow, but it's also simple and we're probably never going to be dealing
+	       with a table where it's so big that it matters. */
+	    candidatesTableHTMLElement.innerHTML =
+		generateTable(candidatesList, selectedColumnInCandidateList) +
+		generateToTopOfTableButton();
+
+	    const tblBody = matchedTableHTMLElement.querySelector("tbody");
+	    // tblBody.innerHTML += generateTableRow(candidatesList, candidatesList.rows[index].rowData);
+
+	    tblBody.insertAdjacentHTML
+	    ("afterbegin", generateTableRow(candidatesList, candidatesList.rows[index].rowData));
 	}
 	else
 	{
-	    noMatchFoundSound.play();
+	    playSound(noMatchFoundSoundPath);
 	}
     }
+}
+
+
+// We're only supporting two field separation values, so this should be good.
+function setInputOutputDataTypeTo(newFieldSeparatorVal)
+{
+    fieldSeparatorStr = newFieldSeparatorVal;
+        console.log("setInputOutputDataTypeTo() called fieldSeparatorStr = ", fieldSeparatorStr);
+}
+
+
+function toggleHideMatchingCandidateRows()
+{
+    hideMatchingCandidateRows = !hideMatchingCandidateRows;
+    candidatesTableHTMLElement.innerHTML =
+	generateTable(candidatesList, selectedColumnInCandidateList) + generateToTopOfTableButton();
+}
+
+
+function scrollToIdOnClick(pageElement)
+{
+    pageElement.closest('div').parentNode.scrollTo({top: 0, left: 0, behavior: 'smooth'});
 }
 
 
 function main()
 {
     const openFileButtonElement = document.getElementById("openFileButtonId");
-    candidatesTableElement = document.getElementById("candidateTableContainerId")
-    matchedTableElement = document.getElementById("matchedListContainerId");
+    candidatesTableHTMLElement = document.getElementById("candidateTableContainerId")
+    matchedTableHTMLElement = document.getElementById("matchedListContainerId");
 
     openFileButtonElement.addEventListener('click', () =>
 	{
@@ -303,14 +382,15 @@ function main()
 			reader.onload = (event) =>
 			{
 			    selectedColumnInCandidateList = 0; // Reset to 0 for a new file...
-			    candidateList = parseCSVData(event.target.result);
+			    candidatesList = parseCSVData(event.target.result);
 			    // Generate candidate table...
-			    candidatesTableElement.innerHTML = generateTable
-			    (candidateList, selectedColumnInCandidateList) +
+			    candidatesTableHTMLElement.innerHTML = generateTable
+			    (candidatesList, selectedColumnInCandidateList) +
 				generateToTopOfTableButton();
 			    // Generate matched table...
-			    matchedTableElement.innerHTML =
-				generateMatchedTableHeader(candidateList);
+			    matchedTableHTMLElement.innerHTML =
+				generateMatchedTableHeader(candidatesList) +
+				generateToTopOfTableButton();
 			};
 
 			reader.readAsText(file);
@@ -333,12 +413,6 @@ function main()
 		matchCandidateInputElement.value = "";
 	    }
 	});
-}
-
-
-function scrollToIdOnClick(pageElement)
-{
-    pageElement.closest('div').parentNode.scrollTo({top: 0, left: 0, behavior: 'smooth'});
 }
 
 

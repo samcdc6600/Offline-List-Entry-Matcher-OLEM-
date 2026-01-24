@@ -41,22 +41,36 @@
 
 	  
 	  <div class="panelControlsCluster">
-	    <button class="tableControlsButton" id="openFileButtonId">
+	    <button class="tableControlsButton tooltip" id="openFileButtonId">
 	      Open File
 	    </button>
+	    <button class="tableControlsButton tooltip" id="openFileButtonId">
+	      LIATD
+	    </button>
+	    <input class="textInputField tsvCsvDataTextInputField" type="text" id="tSVInputFieldId"
+	    	   autocomplete="off" placeholder="...or enter table data here">
 	    <input class="textInputField" type="text" id="matchCandidateInputFieldId"
-		   autocomplete="off" placeholder="Enter match candidate...">
+	    	   autocomplete="off" placeholder="Enter match candidate...">
 	  </div>
 	  <div class="panelControlsCluster">
 	    <form class="panelControlsClusterRadioButtons">
 	      <label class="radioButtonLabel">
+		<!-- "\u0009" is the UTF16 code for '\t' (which is the same as the ASCII code
+		     for it).-->
 		<input type="radio" name="delimiterSelectorRadio" value="TSV"
+		       onclick="setInputOutputDataTypeTo('\u0009')"
 		       checked>
-		TSV
+		<span>TSV</span>
 	      </label>
 	      <label class="radioButtonLabel">
-		<input type="radio" name="delimiterSelectorRadio" value="CSV">
-		CSV
+		<input type="radio" name="delimiterSelectorRadio" value="CSV"
+		       onclick="setInputOutputDataTypeTo(',')">
+		<span>CSV</span>
+	      </label>
+	      <label class="checkboxLabel">
+		<input type="checkbox" id="onlyShowUnmatchedEntriesId"
+		       onclick="toggleHideMatchingCandidateRows()" checked>
+		Only show unmatched entries 
 	      </label>
 	    </form>
 	  </div>
