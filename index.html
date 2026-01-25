@@ -20,7 +20,8 @@
 
 	  
 	  <div class="panelControlsCluster">
-	    <button class="tableControlsButton" onclick="scrollToIdOnClick(this)">
+	    <button class="tableControlsButton" title="Save matched list to a file with TSV or CSV format (which format is used is defined by which option is set in the candidate list controls area)."
+		    onclick="scrollToIdOnClick(this)">
 	      Save List
 	    </button>
 	  </div>
@@ -41,20 +42,31 @@
 
 	  
 	  <div class="panelControlsCluster">
-	    <button class="tableControlsButton tooltip" id="openFileButtonId">
+	    <button class="tableControlsButton tooltip" id="openFileButtonId"
+		    title="Open a file and interpret it as TSV- or CSV-separated table.">
 	      Open File
 	    </button>
-	    <button class="tableControlsButton tooltip" id="openFileButtonId">
-	      LIATD
+	    <button class="tableControlsButton tooltip" id="lTDIAButtonId"
+		    title="Load Table Data (TSV or CSV) from Input Area (on the right).">
+	      LTDIA
 	    </button>
-	    <input class="textInputField tsvCsvDataTextInputField" type="text" id="tSVInputFieldId"
-	    	   autocomplete="off" placeholder="...or enter table data here">
+
+	    
+	    <textarea class="textInputField tsvCsvDataTextInputField"
+		      autocomplete="off" placeholder="...or enter table data here"
+		      id="tSVInputFieldId"></textarea>
+	    
+<!--	    <input class="textInputField tsvCsvDataTextInputField" type="text" id="tSVInputFieldId"
+	    	   autocomplete="off" placeholder="...or enter table data here">-->
+
+	    
 	    <input class="textInputField" type="text" id="matchCandidateInputFieldId"
 	    	   autocomplete="off" placeholder="Enter match candidate...">
 	  </div>
 	  <div class="panelControlsCluster">
 	    <form class="panelControlsClusterRadioButtons">
-	      <label class="radioButtonLabel">
+	      <label class="radioButtonLabel"
+		     title="Set the input and output file formats to tab-separated values.">
 		<!-- "\u0009" is the UTF16 code for '\t' (which is the same as the ASCII code
 		     for it).-->
 		<input type="radio" name="delimiterSelectorRadio" value="TSV"
@@ -62,12 +74,14 @@
 		       checked>
 		<span>TSV</span>
 	      </label>
-	      <label class="radioButtonLabel">
+	      <label class="radioButtonLabel"
+		     title="Set the input and output file formats to comma-separated values.">
 		<input type="radio" name="delimiterSelectorRadio" value="CSV"
 		       onclick="setInputOutputDataTypeTo(',')">
 		<span>CSV</span>
 	      </label>
-	      <label class="checkboxLabel">
+	      <label class="checkboxLabel"
+		     title="Only show unmatched entries...">
 		<input type="checkbox" id="onlyShowUnmatchedEntriesId"
 		       onclick="toggleHideMatchingCandidateRows()" checked>
 		Only show unmatched entries 

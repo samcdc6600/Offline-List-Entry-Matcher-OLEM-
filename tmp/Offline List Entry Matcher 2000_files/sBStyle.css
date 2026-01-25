@@ -16,7 +16,6 @@
     --outer-panel-inset-shadow-color: rgba(0, 0, 0, 0.45);
     /* Main panels (top)... ===================================================================== */
     --panels-top-height: 120px;
-    --panel-controls-cluster-button-height: 25px;
     /* Main panels (list)... ==================================================================== */
     --table-padding: 8px;
     --table-bgColor: #f9dce3;
@@ -114,14 +113,13 @@ input[type="radio"]
 {
     box-sizing: border-box;    /* include padding/border in width/height */
     padding: 1px 4px;
-    height: var(--panel-controls-cluster-button-height); /* match container height */
+    height: 25px;              /* match container height */
 }
 
 .panelControlsClusterRadioButtons
 {
     display: block;
     min-width: 136px;;
-        height: var(--panel-controls-cluster-button-height);
     color: var(--header-color);
 }
 
@@ -135,14 +133,8 @@ input[type="radio"]
 
 .tsvCsvDataTextInputField
 {
-     box-sizing: border-box;
     /* width: 102px; */
     max-width: 208px;
-    height: var(--panel-controls-cluster-button-height);
-    max-height: var(--panel-controls-cluster-button-height);
-    margin: 0px;
-    padding: 0px;
-    resize: none;
 }
 
 table
