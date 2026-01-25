@@ -1,3 +1,9 @@
+<!-- Copyright (c) 2026 Samuel G Brown
+   This software is free to use, modify, and distribute for non-commercial purposes, provided that
+   you credit the author.
+   For commercial use, you must obtain written permission from the author. -->
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,15 +23,13 @@
       <section class="leftPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Matched List</h2>
-
-	  
 	  <div class="panelControlsCluster">
-	    <button class="tableControlsButton" title="Save matched list to a file with TSV or CSV format (which format is used is defined by which option is set in the candidate list controls area)."
-		    onclick="scrollToIdOnClick(this)">
+	    <button class="tableControlsButton"
+		    title="Save matched list to a file with TSV or CSV format (which format is used is defined by which option is set in the candidate list controls area)."
+		    onclick="saveMatchedList()">
 	      Save List
 	    </button>
 	  </div>
-	  
 	</div>
 	<div class="panelList" id="matchedListContainerId">
 	  <div class="toTopOfListButton">
@@ -39,27 +43,19 @@
       <section class="rightPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Candidate List</h2>
-
-	  
 	  <div class="panelControlsCluster">
 	    <button class="tableControlsButton tooltip" id="openFileButtonId"
 		    title="Open a file and interpret it as TSV- or CSV-separated table.">
 	      Open File
 	    </button>
 	    <button class="tableControlsButton tooltip" id="lTDIAButtonId"
-		    title="Load Table Data (TSV or CSV) from Input Area (on the right).">
+		    title="Load Table Data (TSV or CSV) from Input Area (on the right)."
+		    onclick="loadTableDataFromInputArea()">
 	      LTDIA
 	    </button>
-
-	    
 	    <textarea class="textInputField tsvCsvDataTextInputField"
 		      autocomplete="off" placeholder="...or enter table data here"
 		      id="tSVInputFieldId"></textarea>
-	    
-<!--	    <input class="textInputField tsvCsvDataTextInputField" type="text" id="tSVInputFieldId"
-	    	   autocomplete="off" placeholder="...or enter table data here">-->
-
-	    
 	    <input class="textInputField" type="text" id="matchCandidateInputFieldId"
 	    	   autocomplete="off" placeholder="Enter match candidate...">
 	  </div>
@@ -88,8 +84,6 @@
 	      </label>
 	    </form>
 	  </div>
-
-	  
 	</div>
 	<div class="panelList" id="candidateTableContainerId">
 	  <div class="toTopOfListButton">

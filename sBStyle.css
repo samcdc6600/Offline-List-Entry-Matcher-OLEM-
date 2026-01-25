@@ -1,3 +1,9 @@
+/* Copyright (c) 2026 Samuel G Brown
+   This software is free to use, modify, and distribute for non-commercial purposes, provided that
+   you credit the author.
+   For commercial use, you must obtain written permission from the author. */
+
+
 :root
 {
     /* Headers... =============================================================================== */
@@ -15,7 +21,7 @@
     --panel-padding: 8px;
     --outer-panel-inset-shadow-color: rgba(0, 0, 0, 0.45);
     /* Main panels (top)... ===================================================================== */
-    --panels-top-height: 120px;
+    --panels-top-height: 93px;
     --panel-controls-cluster-button-height: 25px;
     /* Main panels (list)... ==================================================================== */
     --table-padding: 8px;
@@ -45,8 +51,6 @@ html
 {
     font-family: "Orbix Regular", serif;
 }
-
-
 
 button,
 select,
@@ -136,7 +140,6 @@ input[type="radio"]
 .tsvCsvDataTextInputField
 {
      box-sizing: border-box;
-    /* width: 102px; */
     max-width: 208px;
     height: var(--panel-controls-cluster-button-height);
     max-height: var(--panel-controls-cluster-button-height);
@@ -182,15 +185,30 @@ th > .tHButton
     height: 100%;
     padding: var(--table-padding);
     margin: 0;
-
     border: none;
     background: none;
-
     font: inherit;
     color: inherit;
     text-align: left;
-
     cursor: pointer;
+}
+
+th > .tHSortButton
+{
+    width: 2.25rem;
+    text-align: center;
+}
+
+th > .tHDummyButton
+{
+    height: 100%;
+    padding: var(--table-padding);
+    margin: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
 }
 
 th > .tHButton:hover
@@ -279,7 +297,7 @@ body
     margin: 0px;
     padding: 0px;
     height: 100%;
-    min-width: 600px;
+    min-width: 950px;
 }
 
 header
@@ -340,7 +358,8 @@ main
 
 .panelTop
 {
-    height: var(--panels-top-height);
+    /* box-sizing: border-box; */
+    height: calc(var(--panels-top-height) - var(--panel-padding) * 2);
     background-color: #3333ff;
     padding: var(--panel-padding);
 }
@@ -354,7 +373,7 @@ main
 .panelList
 {
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
-		 - var(--panels-top-height) - var(--panel-padding) * 2);
+		 - var(--panels-top-height));
     overflow: auto;
     font-family: "Simplex Sans";
 }
@@ -371,8 +390,9 @@ h2
     /* Distance from the bottom of the element this is anchored too (the element using
     "position: relative") (going up!) */
     bottom: calc(var(--panel-padding) * 2);
-    left: 50%;			/* Start at 50% from the left edge of the element */
-    transform: translateX(-50%);	/* Shift half of its own width left to center of the element. */
+    left: 50%;	/* Start at 50% from the left edge of the element */
+    /* Shift half of its own width left to center of the element. */
+    transform: translateX(-50%);
 }
 
 footer
@@ -383,7 +403,8 @@ footer
     justify-content: center;
     z-index: 1; /* ensures it’s above main */
     background-color: var(--header-footer-bgColor);
-    box-shadow: 0 calc(-1 * var(--shadow-vert-offset)) var(--shadow-blur-radius) var(--shadow-color);
+    box-shadow: 0 calc(-1 * var(--shadow-vert-offset))
+		var(--shadow-blur-radius) var(--shadow-color);
 }
 
 .footer-tex
