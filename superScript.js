@@ -31,38 +31,188 @@ function playSound(src)
 }
 
 
-function parseCSVData(cSVData)
+function generateCandidateList(cSVData)
 {
-    cSVData = cSVData.trim();
-    const lines = cSVData.split("\n");             // Split into rows...
-    /* Extract header row (shift removes the first element of an array). Map will apply trim() to
-       each element in the array returned by split. */
-    const headers = lines.shift().split(fieldSeparatorStr).map(header => header.trim());
+    const rawTable = parseTSVCSVDat(cSVData);
+    let headers = [];
+    let rows	= [];
+    
+    if(rawTable.length > 0)
+    {
+	headers = rawTable[0];
+	/* Extract header row (shift removes the first element of an array). Map will apply trim()
+	   to each element in the array. */
+	headers = rawTable.shift().map(header => header.trim());
 
-    /* Call the lambda for each element in lines (the element is assigned to line).
-       Rows should end up being filled with data like this:
-       [ {rowData: { barcode: "100000000001", bin: "A1", category: "Electronics", … },
-       wasMatched: false},
-       {rowData: { barcode: "100000000002", bin: "A2", category: "Electronics", … },
-       wasMatched: false}, ... ] */
-    const rows = lines.map(line =>
-	{
-	    const values = line.split(fieldSeparatorStr);
-	    const rowObj = {};
+	/* Call the lambda for each element in rawTable (the element is assigned to row).
+	   Rows should end up being filled with data like this:
+	   [ {rowData: { barcode: "100000000001", bin: "A1", category: "Electronics", … },
+	   wasMatched: false},
+	   {rowData: { barcode: "100000000002", bin: "A2", category: "Electronics", … },
+	   wasMatched: false}, ... ] */
+	rows = rawTable.map(row =>
+	    {
+		const rowObj = {};
 
-	    // For each element in headers assign it to header and it's index to i.
-	    headers.forEach((header, iter) =>
-		{
-		    /* Header is used as the "index" (since it's a string this is basically acting
-		       like a map). */
-		    rowObj[header] = values[iter].trim();
-		});
-	    
-	    return {"rowData": rowObj, "wasMatched": false};
-	});
+		// For each element in headers assign it to header and it's index to i.
+		headers.forEach((header, iter) =>
+		    {
+			/* Header is used as the "index" (since it's a string this is basically
+			   acting like a map). */
+			rowObj[header] = row[iter].trim();
+		    });
+
+		return {"rowData": rowObj, "wasMatched": false};
+	    });
+    }
 
     // This syntax is actually shorthand for this "{headers: headers, rows: rows}".
     return {headers, rows};
+}
+
+
+/* This parser should mostly follow the RFC 4180 specificaiton, with the notable exceptions that it
+   will accept "\n", "\r" and "\r\n" as new lines (as opposed to just "\r\n") and it won't complain
+   about sequences other than "\r\n" and "," after the ending quot of a field (which would
+   technically be a malformed CSV file). Also there are other ways in which a file can be malformed
+   and we won't return an error value or anything. So we are making the assuming that the input is
+   well formed. Also also technically you can have a header row (or not), but in this program we
+   always assume that there is a header row. There are probably some bugs in this implementation,
+   however we've done some testing of potential edge cases and it seems to handle them correctly.
+   So we're fairly happy with it (of course there's almost always room for improvement).
+   Note that to handle CSV data the fieldSeparatorStr variable should be set to "," and for TSV
+   data it should be set to "\t". */
+function parseTSVCSVDat(cSVData)
+{
+    let fieldIsQuoted	= false;
+    let atStartOfField	= true;
+    let currentFieldText	= "";
+    let currentRow 	= [];
+    let table		= [];
+    
+    const handleNewLineEncountered = function(newLineSequence)
+    {
+	if(fieldIsQuoted)
+	{
+	    currentFieldText += newLineSequence;
+	}
+	else
+	{
+	    atStartOfField = true;
+	    currentRow.push(currentFieldText);
+	    table.push(currentRow);
+	    currentFieldText = "";
+	    currentRow = [];
+	}
+    };
+
+    const handleDQuotes = function(iter)
+    {
+	if(atStartOfField)
+	{
+	    atStartOfField = false;
+	    fieldIsQuoted = true;
+	}
+	else
+	{
+	    if(iter !== cSVData.length - 1)
+	    {
+		if(cSVData[iter + 1] === "\"")
+		{
+		    currentFieldText += "\"";
+		    iter++;
+		}
+		else
+		{
+		    fieldIsQuoted = false;
+		    /* Note that here the next character/s should be a new line sequence or a field
+		       separator. If it isn't then the CSV/TSV data is malformed (in which case we
+		       aren't going to guarantee what will happen, i.e., it will be undefined
+		       behaviour). */
+		}
+	    }
+	    /*
+	      else
+	      {
+	      // This is the last character, so we don't need to do anything...
+	      }
+	    */
+	}
+
+	return iter;
+    };
+
+    if(cSVData.length > 1)
+    {
+	for(let iter = 0; iter < cSVData.length; iter++)
+	{
+	    switch(cSVData[iter])
+	    {
+		case "\"":
+		iter = handleDQuotes(iter);
+		break;
+		case fieldSeparatorStr:
+		{
+		    if(fieldIsQuoted)
+		    {
+			currentFieldText += fieldSeparatorStr;
+		    }
+		    else
+		    {
+			atStartOfField = true;
+			currentRow.push(currentFieldText);
+			currentFieldText = "";
+		    }
+		}
+		break;
+		case "\r":
+		if(iter !== cSVData.length - 1 && cSVData[iter + 1] === "\n")
+		{
+		    handleNewLineEncountered("\r\n");
+		    iter++;
+		}
+		else
+		{
+		    handleNewLineEncountered("\r");
+		}
+		break;
+		case "\n":
+		handleNewLineEncountered("\n");
+		break;
+		default:
+		currentFieldText += cSVData[iter];
+		break;
+	    }
+	}
+	if(cSVData[cSVData.length - 1] !== "\n" && cSVData[cSVData.length - 1] !== "\r" &&
+	   !(cSVData[cSVData.length - 2] === "\r" && cSVData[cSVData.length - 1] === "\n"))
+	{
+	    currentRow.push(currentFieldText);
+	    table.push(currentRow);
+	}
+    }
+    else
+    {
+	if(cSVData.length !== 0)
+	{
+	    switch(cSVData[0])
+	    {
+		case fieldSeparatorStr:
+		table.push(["", ""]);
+		break;
+		case "\n":
+		case "\r":
+		table.push([""]);
+		break;
+		case "\"":
+		break;
+		default:
+		table.push([cSVData[0]]);
+	    }
+	}
+    }
+
+    return table;
 }
 
 
@@ -445,7 +595,7 @@ function scrollToIdOnClick(pageElement)
 function generateTablesFromTSVCSVTextData(textData)
 {
     selectedColumnInCandidateList = 0; // Reset to 0 for a new file...
-    candidatesList = parseCSVData(textData);
+    candidatesList = generateCandidateList(textData);
     matchedList = {};
     // Generate candidate table...
     candidatesTableHTMLElement.innerHTML = generateTable
