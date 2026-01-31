@@ -23,12 +23,15 @@
     /* Main panels (top)... ===================================================================== */
     --panels-top-height: 93px;
     --panel-controls-cluster-button-height: 25px;
+    --panel-controls-cluster-button-width: 102px;
     /* Main panels (list)... ==================================================================== */
     --table-padding: 8px;
     --table-bgColor: #f9dce3;
     --table-controls-font-size: 1em;
     --table-header-highlight-color: #31ff99;
     --table-highlight-color: #ccffe6;
+    /* Main panels (bottom) ===================================================================== */
+    --panels-bottom-height: calc(var(--panels-top-height) / 3);
 }
 
 @font-face
@@ -85,9 +88,9 @@ input[type="radio"]
 /* This is for table controls (excluding the actual in-table heading buttons).  */
 .tableControlsButton
 {
-    width: 102px;
-    max-width: 102px;
-    min-width: 102px;
+    width: var(--panel-controls-cluster-button-width);
+    max-width: var(--panel-controls-cluster-button-width);
+    min-width: var(--panel-controls-cluster-button-width);
     font-family: "Orbix Regular", serif;
     font-size: var(--table-controls-font-size);
 }
@@ -121,11 +124,11 @@ input[type="radio"]
     height: var(--panel-controls-cluster-button-height); /* match container height */
 }
 
-.panelControlsClusterRadioButtons
+.panelControlsClusterRadioButtonsCheckBox
 {
     display: block;
-    min-width: 136px;;
-        height: var(--panel-controls-cluster-button-height);
+    min-width: 136px;
+    height: var(--panel-controls-cluster-button-height);
     color: var(--header-color);
 }
 
@@ -373,7 +376,7 @@ main
 .panelList
 {
     height: calc(100vh - var(--header-height) - var(--footer-height) - var(--panel-margin) * 2
-		 - var(--panels-top-height));
+		 - var(--panels-top-height) - var(--panels-bottom-height));
     overflow: auto;
     font-family: "Simplex Sans";
 }
@@ -389,10 +392,29 @@ h2
     position: absolute;
     /* Distance from the bottom of the element this is anchored too (the element using
     "position: relative") (going up!) */
-    bottom: calc(var(--panel-padding) * 2);
+    bottom: calc(var(--panel-padding) * 2 + var(--panels-bottom-height));
     left: 50%;	/* Start at 50% from the left edge of the element */
     /* Shift half of its own width left to center of the element. */
     transform: translateX(-50%);
+}
+
+.panelBottom
+{
+    /* box-sizing: border-box; */
+    height: calc(var(--panels-bottom-height) - var(--panel-padding) * 2);
+    background-color: #3333ff;
+    padding: var(--panel-padding);
+    display: block;
+    /* height: var(--panel-controls-cluster-button-height); */
+    color: var(--header-color);
+    align-items: center;
+}
+
+.panelBottomInfoOne
+{
+    width: calc(var(--panel-controls-cluster-button-width) + 4);
+    max-width: calc(var(--panel-controls-cluster-button-width) + 4);
+    min-width: calc(var(--panel-controls-cluster-button-width) + 4);
 }
 
 footer
