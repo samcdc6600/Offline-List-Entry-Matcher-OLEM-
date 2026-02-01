@@ -19,7 +19,7 @@
     </header>
     <!-- ====================================== MAIN START ===================================== -->
     <main>
-      <!-- First list (Candidate List) ========================================================= -->
+      <!-- First list (Matched List) =========================================================== -->
       <section class="leftPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Matched List</h2>
@@ -38,8 +38,11 @@
 	  </button>
 	  </div>
 	</div>
+	<div class="panelBottom">
+	  <div class="panelBottomInfo" id="matchedListCountInfoId"></div>
+	</div>
       </section>
-      <!-- Second list (Matched List) ========================================================== -->
+      <!-- Second list (Candidate List) ======================================================== -->
       <section class="rightPanel panelWrapper">
 	<div class="panelTop">
 	  <h2 class="panelHeader">Candidate List</h2>
@@ -64,7 +67,7 @@
 	      <label class="radioButtonLabel"
 		     title="Set the input and output file formats to tab-separated values.">
 		<!-- "\u0009" is the UTF16 code for '\t' (which is the same as the ASCII code
-		     for it).-->
+		     for it). -->
 		<input type="radio" name="delimiterSelectorRadio" value="TSV"
 		       onclick="setInputOutputDataTypeTo('\u0009')"
 		       checked>
@@ -93,8 +96,7 @@
 	  </div>
 	</div>
 	<div class="panelBottom">
-	  <div class="panelBottomInfoOne">total:</div>
-	  <span>remaining:</spacn>
+	  <div class="panelBottomInfo" id="candidateListCountInfoId"></div>
 	</div>
       </section>
     </main>

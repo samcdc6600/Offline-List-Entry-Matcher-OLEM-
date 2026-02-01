@@ -396,6 +396,7 @@ h2
     left: 50%;	/* Start at 50% from the left edge of the element */
     /* Shift half of its own width left to center of the element. */
     transform: translateX(-50%);
+    z-index: 3;
 }
 
 .panelBottom
@@ -410,11 +411,12 @@ h2
     align-items: center;
 }
 
-.panelBottomInfoOne
+.panelBottomInfo
 {
     width: calc(var(--panel-controls-cluster-button-width) + 4);
     max-width: calc(var(--panel-controls-cluster-button-width) + 4);
     min-width: calc(var(--panel-controls-cluster-button-width) + 4);
+    white-space: pre;
 }
 
 footer

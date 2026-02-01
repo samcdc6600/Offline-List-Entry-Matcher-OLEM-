@@ -5,13 +5,18 @@
 
 
 let	selectedColumnInCandidateList = 0;
-let	candidatesTableHTMLElement = {};
+// Candidate list vars =============================================================================
 let	candidatesList		= {};
-let	matchedTableHTMLElement	= {};
+let	candidatesTableHTMLElement = {};
+let	candidateTableCountInfoHTMLElement = {};
+// Matched list vars ===============================================================================
 let	matchedList		= {};
-let	fieldSeparatorStr	= "\t";
+let	matchedTableHTMLElement	= {};
+let	matchedTableCountInfoHTMLElement = {};
 let	hideMatchingCandidateRows = true;
+let	fieldSeparatorStr	= "\t";
 const	foundMatchSoundPath	= "assets/audio/affirmativeMatch_louder.wav";
+const	foundPreMatchedMatchSoundPath = "assets/audio/lesserAffirmativeMatch_louder.wav";
 const	noMatchFoundSoundPath	= "assets/audio/negativeMatch_louder.wav";
 const	columnHeaderTitle	= "Mark this column as the match candidate column.";
 const	columnSortAscendingTitle = "Sort rows by this column in ascending order.";
@@ -334,6 +339,44 @@ tableData.headers.length (${tableData.headers.length})`)
 }
 
 
+function generateCandidateTableCountString()
+{
+    const firstFieldPrefix = "total: "
+    const maxFieldSpaces = 7;
+    let strRet = "";
+
+    strRet += firstFieldPrefix + candidatesList.rows.length;
+    while(strRet.length < (maxFieldSpaces + firstFieldPrefix.length))
+    {
+	strRet += " ";
+    }
+    
+    if(!matchedList.rows)
+    {
+	strRet += " remaining: " + candidatesList.rows.length;
+    }
+    else
+    {
+	strRet += " remaining: " + (candidatesList.rows.length - matchedList.rows.length);
+    }
+
+    return strRet;
+}
+
+
+function generateMatchedTableCountString()
+{
+    let strRet = "";
+
+    if(matchedList.rows)
+    {
+	strRet += "matched: " + matchedList.rows.length;
+    }
+
+    return strRet;
+}
+
+
 // This version doesn't handle highlighting...
 function generateMatchedTableHeader(tableData)
 {
@@ -432,7 +475,6 @@ function handleHeaderSortButtonClickForMatchedList(buttonObj, sortInAscending)
 	// "Un zip" the arrays...
 	matchedList.rows = matchedListZipped.map(element => element.rowData);
 	matchedList.matchedOnHeader = matchedListZipped.map(element => element.matchedOnHeader);
-	console.log(matchedList.rows);
 	// Generate HTML table...
 	matchedTableHTMLElement.innerHTML =
 	    generateMatchedTableHeader(candidatesList);
@@ -467,7 +509,6 @@ function handleHeaderSortButtonClickProper(buttonObj, list, sortInAscending)
 
 function sortTableByColumn(colName, list, ascending)
 {
-    console.log(list);
     /* Here a is row n and b is row n + 1. A negative return result means that a should come before
        b and zero means that they are the same. Also note that sort() sorts the array in place (so
        there's no need for list = ...)
@@ -509,6 +550,7 @@ candidatesList.headers.length (${candidatesList.headers.length})`)
 	}
 	
 	const columnKey = candidatesList.headers[selectedColumnInCandidateList];
+	let foundPreMatchedMatch = false;
 
 	/* FindIndex is really like a for loop that calls the lambda on all elements until it finds
 	   a match (which is signified by the return value of the lambda). It then returns the index
@@ -521,8 +563,14 @@ candidatesList.headers.length (${candidatesList.headers.length})`)
 		   row object has the key columnKey.
 		   If row has the key (which really they all should), then we'll check if it has
 		   searchCandidate too. */
-		return Object.prototype.hasOwnProperty.call(row.rowData, columnKey)
-		    && row.rowData[columnKey] === searchCandidate && !row.wasMatched;
+		let foundMatch = Object.prototype.hasOwnProperty.call(row.rowData, columnKey)
+		    && row.rowData[columnKey] === searchCandidate;
+		if(!foundPreMatchedMatch)
+		{
+		    // Only update foundPreMatchedMatch if it will become true...
+		    foundPreMatchedMatch = foundMatch && row.wasMatched;
+		}
+		return foundMatch && !row.wasMatched;
 	    });
 
 	if(index !== -1)
@@ -547,7 +595,6 @@ candidatesList.headers.length (${candidatesList.headers.length})`)
 	    }
 	    matchedList.matchedOnHeader.unshift(columnKey);
 	    matchedList.rows.unshift(candidatesList.rows[index].rowData);
-	    console.log(matchedList);
 	    candidatesList.rows[index].wasMatched = true;
 	    /* Yes this is slow, but it's also simple and we're probably never going to be dealing
 	       with a table where it's so big that it matters. */
@@ -555,11 +602,18 @@ candidatesList.headers.length (${candidatesList.headers.length})`)
 		generateTable(candidatesList, selectedColumnInCandidateList) +
 		generateToTopOfTableButton();
 	    const tblBody = matchedTableHTMLElement.querySelector("tbody");
-	    // matchedTableHTMLElement.insertAdjacentHTML
+	    /* TODO: we think that there is a spurious (empty) table row ("<tr>") being generated
+	       here. This should of course be fixed */
 	    tblBody.insertAdjacentHTML
 	    ("afterbegin", generateTableRow
 	     (candidatesList.headers, candidatesList.rows[index].rowData,
-	      candidatesList.headers[selectedColumnInCandidateList]));
+	      candidatesList.headers[selectedColumnInCandidateList]));	    
+	    candidateTableCountInfoHTMLElement.textContent = generateCandidateTableCountString();
+	    matchedTableCountInfoHTMLElement.textContent = generateMatchedTableCountString();
+	}
+	else if(foundPreMatchedMatch)
+	{
+	    playSound(foundPreMatchedMatchSoundPath);
 	}
 	else
 	{
@@ -601,10 +655,13 @@ function generateTablesFromTSVCSVTextData(textData)
     candidatesTableHTMLElement.innerHTML = generateTable
     (candidatesList, selectedColumnInCandidateList) +
 	generateToTopOfTableButton();
+    // Generate candidate table count text...
+    candidateTableCountInfoHTMLElement.textContent = generateCandidateTableCountString();
     // Generate matched table...
     matchedTableHTMLElement.innerHTML =
 	generateMatchedTableHeader(candidatesList) +
 	generateToTopOfTableButton();
+    matchedTableCountInfoHTMLElement.textContent = "matched: 0";
 }
 
 
@@ -678,7 +735,9 @@ function main()
 {
     const openFileButtonElement = document.getElementById("openFileButtonId");
     candidatesTableHTMLElement = document.getElementById("candidateTableContainerId")
+    candidateTableCountInfoHTMLElement = document.getElementById("candidateListCountInfoId");
     matchedTableHTMLElement = document.getElementById("matchedListContainerId");
+    matchedTableCountInfoHTMLElement = document.getElementById("matchedListCountInfoId");
 
     openFileButtonElement.addEventListener('click', () =>
 	{
